@@ -53,10 +53,10 @@ Out-of-process service boundary"]
 The clearest way to cut through the confusion is to think of AI agent systems as a layered stack. Each layer answers a different question.
 
 <div class="diagram-embed">
-  <iframe src="../../agent_architecture_diagram.html"
+  <iframe src="../agent_architecture_diagram.html"
           title="Agent Architecture — interactive diagram"
           loading="lazy"></iframe>
-  <figcaption>Figure 1 — Click any layer to learn when and why to use it. &nbsp;<a href="../../agent_architecture_diagram.html" target="_blank">Open full screen ↗</a></figcaption>
+  <figcaption>Figure 1 — Click any layer to learn when and why to use it. &nbsp;<a href="../agent_architecture_diagram.html" target="_blank">Open full screen ↗</a></figcaption>
 </div>
 
 | Layer                        | What It Does                                                                                                                                 | Primary Concern                        |
