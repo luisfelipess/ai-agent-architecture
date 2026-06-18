@@ -1,0 +1,275 @@
+# Consolidated References
+
+*All citations from the three-volume AI Agent Architecture series.*
+
+---
+
+## Volume 1 References — Integration Patterns
+
+### Vol1-Ref-A
+**Vol1-Ref-A: Anthropic — Tool Search Tool Documentation**
+**URL:** https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool
+
+Primary source for the 30–50 tool degradation threshold and the ~55,000 token multi-server setup figure. Official Anthropic tooling documentation recommending a tool search/discovery mechanism once you exceed 30–50 tools, noting that model accuracy degrades significantly beyond that threshold.
+
+---
+
+### Vol1-Ref-B
+**Vol1-Ref-B: Bertelli & Çelik — Skills vs MCP Tools for Agents**
+**Source:** LlamaIndex Blog, Feb 3 2026
+**URL:** https://www.llamaindex.ai/blog/skills-vs-mcp-tools-for-agents-when-to-use-what
+
+Source for the LlamaAgents observation that the MCP documentation server alone was sufficient for correct code generation most of the time, and that skills were "rarely invoked" in ways that substantially improved results. Key finding: MCP wins for rapidly evolving knowledge domains; skills are simpler and sufficient for stable domains.
+
+---
+
+### Vol1-Ref-C
+**Vol1-Ref-C: Apideck — MCP Server Eating Your Context Window**
+**URL:** https://www.apideck.com/blog/mcp-server-eating-context-window-cli-alternative
+
+Measured 3 MCP servers (GitHub, Slack, Sentry) consuming 143,000 of 200,000 tokens (72% of context window) before any conversation began.
+
+---
+
+### Vol1-Ref-D
+**Vol1-Ref-D: ByteIota — Perplexity Ditches MCP**
+**URL:** https://byteiota.com/perplexity-ditches-mcp-72-context-waste-kills-protocol/
+
+Reports Denis Yarats (Perplexity CTO) announcing at the Ask 2026 conference (March 11, 2026) that Perplexity moved away from MCP due to context window overhead.
+
+---
+
+### Vol1-Ref-E
+**Vol1-Ref-E: Carey — Cloudflare Code Mode MCP**
+**Source:** Cloudflare Blog, Feb 20 2026
+**URL:** https://blog.cloudflare.com/code-mode-mcp/
+
+Documents the 244× token reduction (1,000 tokens vs. 244,000 tokens) achieved by Cloudflare's Code Mode by having models write code against pre-authorized API clients rather than exposing individual endpoints as MCP tools. Notes that full Cloudflare API exposure as MCP tools would require 1.17 million tokens.
+
+---
+
+### Vol1-Ref-F
+**Vol1-Ref-F: Google — Function Calling with the Gemini API**
+**URL:** https://ai.google.dev/gemini-api/docs/function-calling
+
+Official Gemini function calling documentation. Key quote: *"While the model can use an arbitrary number of tools, providing too many can increase the risk of selecting an incorrect or suboptimal tool. For best results, aim to provide only the relevant tools for the context or task, ideally keeping the active set to a maximum of 10–20."* Also notes: *"Function descriptions and parameters count towards your input token limit."*
+
+---
+
+### Vol1-Ref-G
+**Vol1-Ref-G: OpenAI — Model Context Protocol (MCP), Agents SDK**
+**URL:** https://openai.github.io/openai-agents-python/mcp/
+
+Official OpenAI Agents SDK MCP documentation. Covers all four transport types (Hosted, Streamable HTTP, SSE, stdio), tool filtering (static and dynamic), and the `cache_tools_list` option: *"Every agent run calls `list_tools()` on each MCP server. Remote servers can introduce noticeable latency"* — documenting why tool list caching is necessary.
+
+---
+
+### Vol1-Ref-H
+**Vol1-Ref-H: Gloaguen et al. — "Evaluating AGENTS.md"**
+**Source:** arXiv:2602.11988, Feb 2026
+**URL:** https://arxiv.org/abs/2602.11988
+
+Empirical study across 300+ coding tasks testing CLAUDE.md and AGENTS.md context files on multiple frontier models. LLM-generated context files reduce task success by 0.5–2% and increase inference cost 20–23%. Human-written context files improve ~4% at ~19% cost overhead. Recommendation: *"describe only minimal requirements."* Context files help when documentation is absent; hurt when redundant with existing docs.
+
+---
+
+### Vol1-Ref-I
+**Vol1-Ref-I: Gao, J. (Vercel) — "AGENTS.md outperforms skills in our agent evals"**
+**Source:** Vercel Blog, Jan 27 2026
+**URL:** https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals
+
+Eval across Next.js 16 tasks. Skills without explicit trigger instructions: 0% improvement (not invoked 56% of the time). AGENTS.md with compressed 8KB docs index: 100% pass rate vs 53% baseline. Key finding: *"no decision point"* — passive context outperforms on-demand retrieval for knowledge needed reliably on every turn. Winning format: a compact pointer map to retrievable files, not full documentation.
+
+---
+
+### Vol1-Ref-Hooks
+**Vol1-Ref-Hooks: Hooks Cross-Framework References**
+
+**Vol1-Ref-J: Anthropic — Automate Workflows with Hooks (Claude Code Docs)**
+URL: https://code.claude.com/docs/en/hooks-guide
+Official guide covering all 29 lifecycle events, four handler types (command, http, prompt, agent), matcher patterns, input/output format, and production examples (file protection, auto-formatting, context re-injection, permission automation).
+
+**Vol1-Ref-K: OpenAI — Lifecycle Hooks (Agents SDK)**
+URL: https://openai.github.io/openai-agents-python/ref/lifecycle/
+`RunHooksBase` and `AgentHooksBase` API reference. Defines `on_llm_start/end`, `on_agent_start/end`, `on_tool_start/end`, `on_handoff`. Hooks are observation-only; they cannot block execution.
+
+**Vol1-Ref-L: OpenAI — Guardrails (Agents SDK)**
+URL: https://openai.github.io/openai-agents-python/guardrails/
+Enforcement layer separate from lifecycle hooks. Input guardrails run on first-agent input; output guardrails run on final-agent output; tool guardrails run per tool invocation. A `tripwire_triggered` flag halts execution.
+
+**Vol1-Ref-M: LangChain — Callbacks**
+URL: https://python.langchain.com/docs/modules/callbacks/
+Event-driven callback system built around `BaseCallbackHandler`. Events include `on_llm_start`, `on_llm_end`, `on_tool_start`, `on_tool_end`, `on_chain_start`, `on_chain_end`, `on_agent_action`, `on_agent_finish`. Raise an exception to block.
+
+**Vol1-Ref-N: Google — Callbacks and Plugins (Agent Development Kit)**
+URL: https://google.github.io/adk-docs/types-of-callbacks/
+ADK callback hooks: `before/after_agent_callback`, `before/after_model_callback`, `before/after_tool_callback`. Returning a value from a `before_` callback short-circuits the operation. Plugins (registered globally on the Runner) extend callbacks across all agents.
+
+---
+
+### Additional Background Reading (Vol 1)
+
+- Official MCP Specification and Architecture: https://modelcontextprotocol.io/docs/learn/architecture
+- Portkey AI — MCP vs Function Calling: https://portkey.ai/blog/mcp-vs-function-calling/
+- Zilliz — Function Calling vs MCP vs A2A Developer Guide: https://zilliz.com/blog/function-calling-vs-mcp-vs-a2a-developers-guide-to-ai-agent-protocols
+- LlamaIndex — Skills vs MCP Tools for Agents: https://www.llamaindex.ai/blog/skills-vs-mcp-tools-for-agents-when-to-use-what
+- Lunar.dev — Preventing MCP Tool Overload: https://www.lunar.dev/post/why-is-there-mcp-tool-overload-and-how-to-solve-it-for-your-ai-agents
+- Jannik Reinhard — CLI Tools vs MCP: https://jannikreinhard.com/2026/02/22/why-cli-tools-are-beating-mcp-for-ai-agents/
+- Improving.com — When MCP Is Not The Right Choice: https://www.improving.com/thoughts/when-mcp-is-not-the-right-choice/
+- Dev.to — Agent vs Skill vs MCP vs Tool (4-Layer Stack): https://dev.to/mininglamp/agent-vs-skill-vs-mcp-vs-tool-the-4-layer-stack-every-ai-developer-should-know-17no
+- Fast.io — Function Calling vs MCP Best Architecture 2026: https://fast.io/resources/function-calling-vs-mcp/
+- MindStudio — Reducing Token Usage in AI Agents: https://www.mindstudio.ai/blog/reduce-token-usage-ai-agents-mcp-optimization
+- Mervin Praison — MCP vs A2A vs Function Calling Production Guide: https://mer.vin/2026/05/mcp-vs-a2a-vs-function-calling-a-practical-layered-guide-for-production-ai-agents/
+
+---
+
+## Volume 2 References — Precision Agents
+
+*Sources cited as Vol1-Ref-A through Vol1-Ref-N in Vol 2 refer to Vol 1 citations above. Citations Vol2-Ref-1 through Vol2-Ref-7 cover progressive context loading, routing, and accuracy flywheel topics. Citations Vol2-Ref-8 through Vol2-Ref-11 cover context hygiene and long-running loop management.*
+
+---
+
+### Vol2-Ref-1
+**Vol2-Ref-1: Lanham, M. — "5 Skills Every AI Agent Needs (And Why Your Mega-Prompt Is Holding You Back)"**
+**Source:** Medium, Feb 2026
+**URL:** https://medium.com/@Micheal-Lanham/5-skills-every-ai-agent-needs-and-why-your-mega-prompt-is-holding-you-back-4b4ab2471c0e
+
+Covers the three-level progressive disclosure model, the lost-in-the-middle effect, 90%+ activation accuracy targets, and the 50K vs 10K token comparison between monolithic and modular prompt architectures.
+
+---
+
+### Vol2-Ref-2
+**Vol2-Ref-2: SkillRouter: Skill Routing for LLM Agents at Scale**
+**Source:** arXiv:2603.22455, March 2026
+**URL:** https://arxiv.org/abs/2603.22455
+
+Retrieve-and-rerank skill routing pipeline achieving 74% top-1 accuracy at 80,000-skill scale. Key finding: the full skill body, not just metadata, is the decisive routing signal in large overlapping skill libraries.
+
+---
+
+### Vol2-Ref-3
+**Vol2-Ref-3: Corrective Retrieval Augmented Generation (CRAG)**
+**Source:** arXiv:2401.15884
+**URL:** https://arxiv.org/abs/2401.15884
+
+Introduces a lightweight retrieval evaluator that assigns confidence scores to retrieved context and triggers corrective actions at three confidence levels (high/medium/low). CRAG modules recover 2–3 F1 points over baseline RAG in production evaluations.
+
+---
+
+### Vol2-Ref-4
+**Vol2-Ref-4: Blueprint First, Model Second**
+**Source:** arXiv:2508.02721
+**URL:** https://arxiv.org/pdf/2508.02721
+
+Formalizes the code-first principle for agentic systems: encode workflow logic as deterministic execution blueprints; invoke the LLM only for bounded, non-deterministic sub-tasks within those blueprints.
+
+---
+
+### Vol2-Ref-5
+**Vol2-Ref-5: Agentic Retrieval-Augmented Generation: A Survey**
+**Source:** arXiv:2501.09136
+**URL:** https://arxiv.org/html/2501.09136v4
+
+Comprehensive survey of agentic RAG architectures. Documents progressive discovery patterns, multi-agent hierarchical orchestration, and production results including 25–40% reductions in irrelevant retrievals.
+
+---
+
+### Vol2-Ref-6
+**Vol2-Ref-6: A-RAG: Keyword, Semantic, and Chunk-Level Retrieval Framework**
+**Source:** arXiv:2603.19415, Feb 2026
+**URL:** https://arxiv.org/pdf/2603.19415
+
+Exposes keyword, semantic, and chunk-level retrieval tools directly to the agent. Reports 5–13% improvement in QA accuracy over flat retrieval baselines.
+
+---
+
+### Vol2-Ref-7
+**Vol2-Ref-7: Softcery — "The AI Agent Prompt Engineering Trap: Diminishing Returns and Real Solutions"**
+**URL:** https://softcery.com/lab/the-ai-agent-prompt-engineering-trap-diminishing-returns-and-real-solutions
+
+Documents the accuracy ceiling of prompt engineering (typically ~75%) and the evidence that further gains require modular design, evaluation pipelines, and architectural changes rather than further wordsmithing.
+
+---
+
+### Vol2-Ref-8
+**Vol2-Ref-8: Zylos AI Research — "AI Agent Context Compression: Strategies for Long-Running Sessions"**
+**Source:** Zylos AI, Feb 2026
+**URL:** https://zylos.ai/research/2026-02-28-ai-agent-context-compression-strategies
+
+Documents context drift as the dominant multi-agent failure mode. Context degradation is a continuous process beginning at token one across all tested frontier models; nearly 65% of enterprise AI failures in 2025 were attributed to context drift, not exhaustion.
+
+---
+
+### Vol2-Ref-9
+**Vol2-Ref-9: ContextEvolve: Multi-Agent Context Compression for Systems Code Optimization**
+**Source:** arXiv:2602.02597, Feb 2026
+**URL:** https://arxiv.org/abs/2602.02597
+
+Three-agent framework (Summarizer, Navigator, Sampler) for long-horizon context management. The Summarizer Agent compresses semantic state via code-to-language abstraction, achieving a 29% reduction in token consumption and 33.3% performance improvement over prior methods.
+
+---
+
+### Vol2-Ref-10
+**Vol2-Ref-10: E-mem: Multi-Agent Based Episodic Context Reconstruction for LLM Agent Memory**
+**Source:** arXiv:2601.21714, Jan 2026
+**URL:** https://arxiv.org/abs/2601.21714
+
+Hierarchical architecture where assistant agents maintain uncompressed per-episode contexts and a master agent orchestrates global planning. Achieves 54% F1 on LoCoMo, 7.75% above prior state-of-the-art, while reducing token cost by over 70% vs. flat context accumulation.
+
+---
+
+### Vol2-Ref-11
+**Vol2-Ref-11: Artifacts as Memory Beyond the Agent Boundary**
+**Source:** arXiv:2604.08756, April 2026
+**URL:** https://arxiv.org/abs/2604.08756
+
+Formal proof that when agents can observe environmental artifacts rather than carrying them in-context, the internal memory required to represent history is fundamentally reduced. Provides theoretical grounding for artifact externalization: the environment itself is memory.
+
+---
+
+## Volume 3 References — Workspace Contracts
+
+### Vol3-Ref-1
+**Vol3-Ref-1: Gloaguen et al. — "Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?"**
+**Source:** arXiv:2602.11988, Feb 2026
+**URL:** https://arxiv.org/abs/2602.11988
+
+*See Vol1-Ref-H above for full annotation.* Also cited in Vol 3 for the finding that LLM-generated context files reduce task success and the concrete nuance that context files help for underdocumented repositories and hurt for popular/well-documented ones.
+
+---
+
+### Vol3-Ref-2
+**Vol3-Ref-2: Gao, J. (Vercel) — "AGENTS.md outperforms skills in our agent evals"**
+**Source:** Vercel Blog, Jan 27 2026
+**URL:** https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals
+
+*See Vol1-Ref-I above for full annotation.* Cited in Vol 3 for the "no decision point" mechanism and the validated pointer-file pattern for agent discoverability.
+
+---
+
+### Vol3-Ref-3
+**Vol3-Ref-3: claude-mem.ai — Folder Context Files Documentation**
+**URL:** https://docs.claude-mem.ai/usage/folder-context
+
+Documents automated per-folder CLAUDE.md generation with activity timelines. Feature is disabled by default; explicitly scoped to "developers working on stable codebases." Preserves user-written content outside auto-generated tags. Used in Vol 3 as a real-world Model A implementation reference.
+
+---
+
+### Vol3-Ref-4
+**Vol3-Ref-4: Linux Foundation — Agentic AI Foundation (AAIF) Formation**
+**Source:** Linux Foundation Press Release, December 2025
+**URL:** https://www.linuxfoundation.org/press/linux-foundation-announces-the-formation-of-the-agentic-ai-foundation
+
+AGENTS.md contributed as a founding project alongside MCP and Goose. 49 member organizations including Anthropic, OpenAI, Google, Microsoft, Amazon, Block, Bloomberg, and Cloudflare. AGENTS.md had been adopted by 60,000+ open-source repositories before the announcement.
+
+---
+
+### Vol3-Ref-5
+**Vol3-Ref-5: llmstxt.org — "The /llms.txt File" Specification**
+**URL:** https://llmstxt.org/
+
+Proposed standard (2025) for a Markdown file at a website root providing LLM-readable context about the site's contents. Analogous to AGENTS.md for code repositories. Adopted by 600+ sites including Anthropic, Perplexity, Stripe, Cloudflare, and Zapier as of mid-2025.
+
+---
+
+*← [Back to Series Index](index.md)*

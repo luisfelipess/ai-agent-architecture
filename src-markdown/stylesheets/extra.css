@@ -1,0 +1,69 @@
+/* ── Mermaid diagram sizing ──────────────────────────────────────── */
+
+/* Force all mermaid SVGs to fill the content column and scale properly.
+   !important is necessary because Mermaid sets inline width/height attributes
+   that would otherwise override these rules. */
+.mermaid svg {
+  max-width: 100% !important;
+  width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin: 0 auto;
+}
+
+/* The Architecture Stack flowchart (TB, 5 layers) needs explicit height */
+.arch-stack .mermaid svg {
+  min-height: 460px !important;
+}
+
+/* ── Mermaid background transparency ─────────────────────────────── */
+
+/* xychart-beta and quadrantChart render a filled <rect> as background.
+   Making it transparent means the page background shows through in both
+   light and dark mode, fixing the "white box in dark mode" problem.
+   This is safe for flowcharts too — node fills are unaffected. */
+.mermaid svg > rect:first-child,
+.mermaid svg rect.background {
+  fill: transparent !important;
+}
+
+/* ── xychart-beta dark mode fix ──────────────────────────────────── */
+
+/* xychart renders axis labels as stroked SVG paths, not standard text fills.
+   Targeting svg[aria-roledescription="xychart"] narrows the rule to xycharts
+   only. Setting stroke fixes the axis text; fill covers any true text nodes.
+   Source: Obsidian forum research confirming xychart uses stroke for labels. */
+[data-md-color-scheme="slate"] .mermaid svg[aria-roledescription="xychart"] text,
+[data-md-color-scheme="slate"] .mermaid svg[aria-roledescription="xychart"] tspan {
+  fill: var(--md-default-fg-color) !important;
+  stroke: none !important;
+}
+
+[data-md-color-scheme="slate"] .mermaid svg[aria-roledescription="xychart"] path,
+[data-md-color-scheme="slate"] .mermaid svg[aria-roledescription="xychart"] line {
+  stroke: var(--md-default-fg-color--light) !important;
+}
+
+/* ── Interactive diagram iframe embed ────────────────────────────── */
+
+.diagram-embed {
+  margin: 1.5rem 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--md-default-fg-color--lightest);
+}
+
+.diagram-embed iframe {
+  display: block;
+  width: 100%;
+  height: 580px;
+  border: 0;
+}
+
+.diagram-embed figcaption {
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  color: var(--md-default-fg-color--light);
+  background: var(--md-default-bg-color);
+  border-top: 1px solid var(--md-default-fg-color--lightest);
+}

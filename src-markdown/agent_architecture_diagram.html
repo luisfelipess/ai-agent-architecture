@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Architecture: Skills · Local Tools · MCP</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #ffffff; --bg2: #f7f6f3; --text: #2c2c2a; --text2: #5f5e5a;
+    --border: rgba(0,0,0,0.12); --radius: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #1a1a18; --bg2: #242422; --text: #e8e6df; --text2: #9c9a92; --border: rgba(255,255,255,0.1); }
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    background: var(--bg); color: var(--text); min-height: 100vh; padding: 32px 24px; }
+  h1 { font-size: 20px; font-weight: 500; margin-bottom: 6px; }
+  .subtitle { font-size: 14px; color: var(--text2); margin-bottom: 28px; }
+  svg { width: 100%; max-width: 720px; display: block; margin: 0 auto; }
+
+  .node { cursor: pointer; }
+  .node:hover rect, .node:hover ellipse { opacity: 0.85; }
+
+  .legend { max-width: 720px; margin: 20px auto 0; display: flex; gap: 24px;
+    font-size: 13px; color: var(--text2); flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 8px; }
+  .legend-line { width: 40px; height: 2px; background: var(--text2); flex-shrink: 0; }
+  .legend-dashed { background: none; border-top: 2px dashed #0F6E56; }
+
+  .tooltip { position: fixed; background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 14px 16px; font-size: 13px; max-width: 300px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12); pointer-events: none; opacity: 0;
+    transition: opacity 0.15s; z-index: 100; line-height: 1.6; color: var(--text); }
+  .tooltip.visible { opacity: 1; }
+  .tooltip strong { display: block; margin-bottom: 4px; font-size: 14px; }
+
+  .info-panel { max-width: 720px; margin: 28px auto 0; padding: 18px 20px;
+    background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
+    font-size: 14px; line-height: 1.7; color: var(--text2); display: none; }
+  .info-panel.visible { display: block; }
+  .info-panel h2 { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 8px; }
+  .info-panel .tag { display: inline-block; font-size: 11px; font-weight: 500;
+    padding: 2px 8px; border-radius: 20px; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+
+<h1>Agent Architecture: Skills · Local Tools · MCP</h1>
+<p class="subtitle">Click any layer to learn when and why to use it. From the series: <em>AI Agent Architecture — A Field Guide</em></p>
+
+<svg viewBox="0 0 680 520" role="img" xmlns="http://www.w3.org/2000/svg">
+<title>Agent interaction architecture diagram</title>
+<desc>Shows how an AI agent connects to Skills via context injection, Local Tools via direct calls, and MCP Servers via JSON-RPC protocol which leads to external services.</desc>
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#888780" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <marker id="arr-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <marker id="arr-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#854F0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <style>
+    .node rect, .node ellipse { transition: opacity 0.15s; }
+    .node:hover rect, .node:hover ellipse { opacity: 0.82; }
+    @media (prefers-color-scheme: dark) {
+      .user rect { fill: #444441; stroke: #888780; }
+      .user text { fill: #D3D1C7; }
+      .agent rect { fill: #3C3489; stroke: #7F77DD; }
+      .agent text.title { fill: #CECBF6; }
+      .agent text.sub { fill: #AFA9EC; }
+      .skills rect { fill: #085041; stroke: #1D9E75; }
+      .skills text.title { fill: #9FE1CB; }
+      .skills text.sub { fill: #5DCAA5; }
+      .tools rect { fill: #0C447C; stroke: #378ADD; }
+      .tools text.title { fill: #B5D4F4; }
+      .tools text.sub { fill: #85B7EB; }
+      .mcp rect { fill: #633806; stroke: #BA7517; }
+      .mcp text.title { fill: #FAC775; }
+      .mcp text.sub { fill: #EF9F27; }
+      .ext rect { fill: #712B13; stroke: #D85A30; }
+      .ext text.title { fill: #F5C4B3; }
+      .ext text.sub { fill: #F0997B; }
+      .badge-blue rect { fill: #0C447C; }
+      .badge-blue text { fill: #B5D4F4; }
+      .badge-amber rect { fill: #633806; }
+      .badge-amber text { fill: #FAC775; }
+      line.arr-line { stroke: #888780; }
+      path.dashed { stroke: #1D9E75; }
+      text.label-injection { fill: #1D9E75; }
+      line.divider { stroke: #444441; }
+      text.legend-text { fill: #888780; }
+    }
+  </style>
+</defs>
+
+<!-- USER REQUEST -->
+<g class="node user" onclick="showInfo('user')">
+  <rect x="250" y="30" width="180" height="44" rx="8" fill="#F1EFE8" stroke="#888780" stroke-width="0.5"/>
+  <text class="title" x="340" y="58" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="500" fill="#444441">User request</text>
+</g>
+
+<!-- user → agent arrow -->
+<line class="arr-line" x1="340" y1="74" x2="340" y2="128" stroke="#888780" stroke-width="1.5" marker-end="url(#arr)"/>
+
+<!-- AI AGENT -->
+<g class="node agent" onclick="showInfo('agent')">
+  <rect x="110" y="130" width="460" height="58" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+  <text class="title" x="340" y="154" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="500" fill="#3C3489">AI Agent</text>
+  <text class="sub" x="340" y="174" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#534AB7">LLM + orchestration loop</text>
+</g>
+
+<!-- agent → skills (DASHED = context injection) -->
+<path class="dashed" d="M175 188 L135 270" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-dasharray="6 3" marker-end="url(#arr-teal)"/>
+<text class="label-injection" x="126" y="234" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#0F6E56" font-style="italic">context</text>
+<text class="label-injection" x="126" y="248" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#0F6E56" font-style="italic">injection</text>
+
+<!-- agent → local tools -->
+<line class="arr-line" x1="330" y1="188" x2="330" y2="270" stroke="#888780" stroke-width="1.5" marker-end="url(#arr)"/>
+
+<!-- agent → MCP -->
+<path class="arr-path" d="M490 188 L525 270" fill="none" stroke="#888780" stroke-width="1.5" marker-end="url(#arr)"/>
+
+<!-- SKILLS -->
+<g class="node skills" onclick="showInfo('skills')">
+  <rect x="60" y="272" width="150" height="62" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+  <text class="title" x="135" y="297" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="500" fill="#085041">Skills</text>
+  <text class="sub" x="135" y="317" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#0F6E56">behavioral guidance</text>
+</g>
+
+<!-- LOCAL TOOLS -->
+<g class="node tools" onclick="showInfo('tools')">
+  <rect x="240" y="272" width="180" height="62" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+  <text class="title" x="330" y="297" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="500" fill="#0C447C">Local tools</text>
+  <text class="sub" x="330" y="317" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#185FA5">functions · CLI wrappers</text>
+</g>
+
+<!-- MCP SERVERS -->
+<g class="node mcp" onclick="showInfo('mcp')">
+  <rect x="450" y="272" width="170" height="62" rx="8" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+  <text class="title" x="535" y="297" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="500" fill="#633806">MCP servers</text>
+  <text class="sub" x="535" y="317" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#854F0B">JSON-RPC protocol</text>
+</g>
+
+<!-- MCP → External -->
+<line x1="535" y1="334" x2="535" y2="390" stroke="#854F0B" stroke-width="1.5" marker-end="url(#arr-amber)"/>
+
+<!-- EXTERNAL SERVICES -->
+<g class="node ext" onclick="showInfo('external')">
+  <rect x="450" y="392" width="170" height="52" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="0.5"/>
+  <text class="title" x="535" y="414" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="500" fill="#712B13">External services</text>
+  <text class="sub" x="535" y="432" text-anchor="middle" font-family="Arial,sans-serif" font-size="12" fill="#993C1D">SaaS · APIs · databases</text>
+</g>
+
+<!-- Speed badges -->
+<g class="badge-blue">
+  <rect x="249" y="344" width="162" height="20" rx="10" fill="#B5D4F4"/>
+  <text x="330" y="358" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#0C447C">⚡ in-process · zero overhead</text>
+</g>
+<g class="badge-amber">
+  <rect x="459" y="344" width="152" height="20" rx="10" fill="#FAC775"/>
+  <text x="535" y="358" text-anchor="middle" font-family="Arial,sans-serif" font-size="11" fill="#633806">∿ portable · standardized</text>
+</g>
+
+<!-- Divider -->
+<line class="divider" x1="40" y1="468" x2="640" y2="468" stroke="#D3D1C7" stroke-width="0.5"/>
+
+<!-- Legend -->
+<text class="legend-text" x="40" y="490" font-family="Arial,sans-serif" font-size="12" fill="#5F5E5A">Legend:</text>
+<line x1="100" y1="487" x2="148" y2="487" stroke="#888780" stroke-width="1.5" marker-end="url(#arr)"/>
+<text class="legend-text" x="156" y="491" font-family="Arial,sans-serif" font-size="12" fill="#5F5E5A">direct call</text>
+<line x1="290" y1="487" x2="338" y2="487" stroke="#0F6E56" stroke-width="1.5" stroke-dasharray="6 3" marker-end="url(#arr-teal)"/>
+<text class="legend-text" x="346" y="491" font-family="Arial,sans-serif" font-size="12" fill="#5F5E5A">context injection (behavioral)</text>
+</svg>
+
+<div class="tooltip" id="tooltip"></div>
+
+<div class="info-panel" id="info-panel">
+  <h2 id="info-title"></h2>
+  <div id="info-tag" class="tag"></div>
+  <div id="info-body"></div>
+</div>
+
+<script>
+const INFO = {
+  user: {
+    title: 'User request',
+    tag: 'Entry point', tagColor: '#888780', tagBg: '#F1EFE8',
+    body: 'The raw request that enters the system. The agent receives it, reasons about it, and decides which combination of skills, tools, and MCP connections to use to fulfil it.'
+  },
+  agent: {
+    title: 'AI Agent — the orchestration layer',
+    tag: 'Central orchestrator', tagColor: '#3C3489', tagBg: '#EEEDFE',
+    body: '<strong>What it does:</strong> Holds the LLM + the reasoning loop. Reads context (including any injected skills), decides what tool to call or what MCP server to query, and integrates results back into the response.<br><br><strong>Key constraint:</strong> Everything visible to the agent — user message, skill instructions, tool schemas, conversation history — competes for space in the context window. Architecture decisions are really context budget decisions.'
+  },
+  skills: {
+    title: 'Skills — behavioral injection',
+    tag: 'Context layer', tagColor: '#085041', tagBg: '#E1F5EE',
+    body: '<strong>What they are:</strong> Natural-language instructions (SKILL.md files) injected into the context window to guide how the agent approaches a task — tone, format, domain heuristics, workflow steps.<br><br><strong>Arrow is dashed</strong> because skills don\'t get "called" — they\'re injected into context before reasoning begins. The agent reads them like a briefing note, not like a function.<br><br><strong>Use when:</strong> Stable behavioral guidance, reusable domain know-how, output format standards.<br><strong>Don\'t use when:</strong> You need deterministic code execution. Skills are probabilistic. Put logic in tools.'
+  },
+  tools: {
+    title: 'Local tools — in-process execution',
+    tag: 'Execution layer', tagColor: '#0C447C', tagBg: '#E6F1FB',
+    body: '<strong>What they are:</strong> Functions registered with the LLM via JSON Schema. The agent decides to call one; your code executes it in-process (or as a CLI subprocess — same thing from the agent\'s perspective).<br><br><strong>CLI wrappers</strong> are just local tools whose implementation calls subprocess.run() instead of a library. The agent never knows the difference. The rule: if a battle-tested CLI exists, wrap it rather than reimplementing.<br><br><strong>Use when:</strong> Anything that runs locally on the same machine — file I/O, computation, shell commands, local DB queries, anything in-process.<br><strong>Don\'t use when:</strong> You need to share the tool across multiple AI clients → use MCP instead.'
+  },
+  mcp: {
+    title: 'MCP servers — standardized connectors',
+    tag: 'Protocol layer', tagColor: '#633806', tagBg: '#FAEEDA',
+    body: '<strong>What it is:</strong> Model Context Protocol — a JSON-RPC 2.0 client-server standard for connecting AI agents to external systems. An MCP server exposes Tools (callable), Resources (data/context), and Prompts (templates).<br><br><strong>The N+M benefit:</strong> Build one MCP server for your service, and any MCP-compatible agent (Claude, Cursor, VS Code, etc.) can use it. Without MCP you\'d need N×M custom integrations.<br><br><strong>Use when:</strong> Connecting to third-party SaaS (GitHub, Jira, Slack), multi-client portability is needed, or you need credential isolation on the server side.<br><strong>Don\'t use when:</strong> The operation is purely local/in-process. MCP for local work is over-engineering — adds process management, JSON-RPC overhead, and context bloat for zero benefit.'
+  },
+  external: {
+    title: 'External services',
+    tag: 'Data sources', tagColor: '#712B13', tagBg: '#FAECE7',
+    body: '<strong>What lives here:</strong> GitHub, Jira, Slack, Notion, Sentry, your company\'s databases, third-party APIs — anything outside the agent\'s local runtime.<br><br>These are always accessed through an MCP server (which handles auth, rate limiting, and schema evolution), never directly from the agent\'s function-calling layer. That separation is the point: credentials stay on the server, the agent only gets structured results.'
+  }
+};
+
+const panel = document.getElementById('info-panel');
+const infoTitle = document.getElementById('info-title');
+const infoTag = document.getElementById('info-tag');
+const infoBody = document.getElementById('info-body');
+
+function showInfo(key) {
+  const d = INFO[key];
+  if (!d) return;
+  infoTitle.textContent = d.title;
+  infoTag.textContent = d.tag;
+  infoTag.style.color = d.tagColor;
+  infoTag.style.background = d.tagBg;
+  infoBody.innerHTML = d.body;
+  panel.classList.add('visible');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+</body>
+</html>

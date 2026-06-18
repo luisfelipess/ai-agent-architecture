@@ -1,0 +1,110 @@
+site_name: AI Agent Architecture — A Field Guide
+site_author: Luis Felipe Silveira da Silva
+site_description: >-
+  Three volumes on AI agent integration patterns, execution architecture,
+  and workspace design — compiled from hands-on experience building AI-powered software.
+site_url: https://luisfelipess.github.io/ai-agent-architecture/
+
+docs_dir: src-markdown
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: teal
+      accent: deep orange
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: teal
+      accent: deep orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Inter
+    code: JetBrains Mono
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - admonition
+  - tables
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: false
+
+extra_css:
+  - stylesheets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/luifelss/
+    - icon: fontawesome/brands/github
+      link: https://github.com/luisfelipess
+
+nav:
+  - Home: index.md
+  - "Vol 1 — Integration Patterns":
+    - Overview: vol1/00-overview.md
+    - Foundations & Decision Framework: vol1/01-foundations.md
+    - Model Context Protocol: vol1/02-mcp.md
+    - Local Tools & CLI: vol1/03-local-tools-and-cli.md
+    - Skills: vol1/04-skills.md
+    - Steering Files: vol1/05-steering-files.md
+    - Hooks: vol1/06-hooks.md
+    - Comparison & Economics: vol1/07-comparison-and-economics.md
+    - Local Package Guide: vol1/08-local-package-guide.md
+    - Patterns Working Together: vol1/09-patterns-working-together.md
+    - Misconceptions: vol1/10-misconceptions.md
+    - Recommendations: vol1/11-recommendations.md
+    - Conclusion: vol1/12-conclusion.md
+  - "Vol 2 — Precision Agents":
+    - Overview: vol2/00-overview.md
+    - Why Mega-Prompts Break: vol2/01-mega-prompt-trap.md
+    - Code-First & Modular Design: vol2/02-code-first-and-modular.md
+    - Progressive Context Loading: vol2/03-progressive-context-loading.md
+    - Validation Loops: vol2/04-validation-loops.md
+    - Context Hygiene: vol2/05-context-hygiene.md
+    - The Accuracy Flywheel: vol2/06-accuracy-flywheel.md
+    - Precision Skills & Architecture: vol2/07-precision-skills-and-architecture.md
+    - Principles Working Together: vol2/08-principles-working-together.md
+    - Misconceptions: vol2/09-misconceptions.md
+    - Recommendations: vol2/10-recommendations.md
+    - Conclusion: vol2/11-conclusion.md
+  - "Vol 3 — Workspace Contracts":
+    - Overview: vol3/00-overview.md
+    - Two Mental Models: vol3/01-two-mental-models.md
+    - Four Architectural Tenets: vol3/02-four-tenets.md
+    - Evidence & Tradeoffs: vol3/03-evidence-and-tradeoffs.md
+    - Steering File Design: vol3/04-steering-file-design.md
+    - Reference Architecture: vol3/05-reference-architecture.md
+    - Working Together: vol3/06-workspace-design-working-together.md
+    - Misconceptions: vol3/07-misconceptions.md
+    - Recommendations: vol3/08-recommendations.md
+    - Conclusion: vol3/09-conclusion.md
+  - References: references.md
