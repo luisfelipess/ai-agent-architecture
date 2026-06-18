@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:  # lets you trigger a build manually from the Actions tab
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -31,6 +31,9 @@ jobs:
 
       - name: Build site
         run: zensical build --clean
+
+      - name: Copy standalone HTML files
+        run: cp src-markdown/vol1/agent_architecture_diagram.html site/vol1/
 
       - uses: actions/upload-pages-artifact@v4
         with:
