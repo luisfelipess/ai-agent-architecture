@@ -52,9 +52,17 @@ Out-of-process service boundary"]
 
 The clearest way to cut through the confusion is to think of AI agent systems as a layered stack. Each layer answers a different question.
 
-<p><strong>Figure 1 — Agent interaction architecture.</strong><br>
-Click any layer to explore when and why to use it:<br>
-<a href="../agent_architecture_diagram.html" target="_blank">→ Open interactive diagram ↗</a></p>
+<div class="diagram-embed">
+<iframe src="https://luisfelipess.github.io/ai-agent-architecture/vol1/agent_architecture_diagram.html"
+        title="Agent Architecture — interactive diagram"
+        loading="lazy"
+        style="width:100%;height:580px;border:0;border-radius:8px;">
+</iframe>
+<p style="font-size:0.75rem;color:var(--md-default-fg-color--light);margin-top:0.5rem;">
+Figure 1 — Click any layer to learn when and why to use it. &nbsp;
+<a href="https://luisfelipess.github.io/ai-agent-architecture/vol1/agent_architecture_diagram.html" target="_blank">Open full screen ↗</a>
+</p>
+</div>
 
 | Layer                        | What It Does                                                                                                                                 | Primary Concern                        |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
