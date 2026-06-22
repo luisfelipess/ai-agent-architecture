@@ -71,6 +71,10 @@ At 80% single-pass, 20% of queries require additional LLM calls, additional late
 
 ## Setting and Evolving Targets
 
+!!! note "Domain-scope caveat"
+
+    The target ladder below assumes a **bounded domain**: a fixed, well-understood set of query types — the automotive-diagnostics example used throughout this volume is exactly that kind of scope. In open-ended domains, single-pass rate can plateau well below 80% regardless of routing quality, because the variance lives in the queries rather than the skills. Recalibrate targets for the scope of your specific agent before treating these numbers as universal benchmarks.
+
 Set an initial target based on your system's current state. A new system might start at **60% Pass 1 success** and improve over time — the architecture is working if that number moves upward consistently. A reasonable benchmark for a system with well-written skills and clean context management is **80% single-pass success**. From there, raise the target as the system matures: once you consistently hit 80%, aim for 85%, then 90%, then 95%+.
 
 | Phase | Target | How to Get There |
@@ -97,6 +101,22 @@ When a query fails Pass 1 and escalates, log not just the fact of escalation but
 | `context_drift` | Long session; accumulated context degraded quality | Add Summarizer Agent; review compaction boundaries |
 
 Without these labels, you're improving blindly. With them, every failure is a work order.
+
+**Label discipline matters.** Two labels in particular are easy to confuse and drive opposite fixes: `ambiguous_tool` (the matching step returned multiple candidates; solution is to split or clarify tools) and `routing_miss` (no candidate matched; solution is to add keywords or improve embeddings). Mislabeling one as the other sends you in the wrong direction — and because the flywheel feeds on these labels, a consistent mislabeling will optimize the system away from the real fix.
+
+---
+
+## The Flywheel Needs an Oracle — and the Oracle Is Not Free
+
+Every phase of the flywheel assumes you can label a Pass-1 result as correct or incorrect. That label has to come from somewhere: human review, a regression set with known-good answers, or a judge model. Each option has a cost and a reliability ceiling.
+
+| Labeling source | Cost | Reliability ceiling | Notes |
+|----------------|------|-------------------|-------|
+| Human review | High | High | Gold standard; doesn't scale |
+| Regression set (known-good answers) | Medium (upfront) | High for covered cases | Blind to out-of-distribution queries |
+| Judge model | Low–medium | Moderate | Inherits judge's error rate; needs its own calibration |
+
+**The quality of the entire flywheel is capped by the quality of this labeling step.** Budget for it explicitly. A flywheel fed by noisy or inconsistent labels does not turn slowly — it turns in the wrong direction, optimizing toward whatever the mislabeling rewards. Before setting a single-pass target, decide who or what assigns the ground-truth label and how you audit that labeler's agreement rate.
 
 ---
 

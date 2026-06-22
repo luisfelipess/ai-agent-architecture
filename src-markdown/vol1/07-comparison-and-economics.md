@@ -30,24 +30,27 @@ The following matrix covers the most critical dimensions for choosing an integra
 ```mermaid
 %%{init: {'xychart': {'width': 900, 'height': 400}, 'themeVariables': {'xyChart': {'backgroundColor': 'transparent', 'plotColorPalette': '#bb653b', 'xAxisLabelColor': '#888888', 'xAxisTitleColor': '#888888', 'xAxisTickColor': '#888888', 'xAxisLineColor': '#888888', 'yAxisLabelColor': '#888888', 'yAxisTitleColor': '#888888', 'yAxisTickColor': '#888888', 'yAxisLineColor': '#888888', 'titleColor': '#666666'}}}}%%
 xychart-beta
-    title "Token Budget Consumed Before First User Message"
+    title "Token Budget Consumed Before First User Message (Illustrative)"
     x-axis ["1 MCP server", "5 MCP servers", "15 MCP servers", "30 MCP servers"]
     y-axis "% of 200k context window" 0 --> 80
     bar [3, 14, 41, 72]
 ```
 
+*The bars above are modeled projections anchored to two measured data points (the Anthropic 55k-token multi-server figure and the Apideck 3-server measurement). They illustrate the scaling trend; they are not four independently measured values. See the sourcing notes below.*
 
 Context window usage is one of the least-discussed but most practically important dimensions of tool architecture. Every token in the context window costs money and (more importantly) reduces the space available for actual user content and reasoning.
 
-### Measured production numbers
+### Production numbers and sourcing notes
 
-The scale of the problem is real and documented:
+The scale of the problem is real and documented. A note on evidence quality follows each figure.
 
-- Anthropic's tooling documentation reports that a typical multi-server MCP setup (GitHub, Slack, Sentry, Grafana, Splunk) can consume **~55,000 tokens** in tool definitions before any conversation starts. [Vol1-Ref-A](../references.md#vol1-ref-a)
+- Anthropic's tooling documentation reports that a typical multi-server MCP setup (GitHub, Slack, Sentry, Grafana, Splunk) can consume **~55,000 tokens** in tool definitions before any conversation starts. [Vol1-Ref-A](../references.md#vol1-ref-a) *(Primary source: official Anthropic documentation.)*
 
-- Apideck measured 3 MCP servers (GitHub, Slack, Sentry) consuming **143,000 of a 200,000-token context window** — 72% — before any conversation began. Denis Yarats (Perplexity CTO) cited this overhead as a key reason Perplexity moved away from MCP, announcing the decision at the Ask 2026 conference (March 11, 2026). [Vol1-Ref-C](../references.md#vol1-ref-c), [Vol1-Ref-D](../references.md#vol1-ref-d)
+- Apideck measured 3 MCP servers (GitHub, Slack, Sentry) consuming **143,000 of a 200,000-token context window** — 72% — before any conversation began. [Vol1-Ref-C](../references.md#vol1-ref-c) *(Single-origin measurement: this figure has been widely reproduced across the industry, but every instance traces back to this one Apideck blog post. Apideck sells a CLI alternative to MCP. Treat it as a representative data point and directional signal, not an independently verified constant.)*
 
-- Cloudflare's Code Mode demonstrated a **244× token reduction** (1,000 tokens vs. 244,000) by having models write code against pre-authorized API clients rather than exposing individual endpoints as MCP tools. Exposing the full Cloudflare API as MCP tools would require **1.17 million tokens**. [Vol1-Ref-E](../references.md#vol1-ref-e)
+- Denis Yarats (Perplexity CTO) cited context window overhead as a key reason Perplexity moved away from MCP, announcing the decision at the Ask 2026 conference (March 11, 2026). [Vol1-Ref-D](../references.md#vol1-ref-d) *(The underlying event is broadly corroborated by multiple independent write-ups from the conference; the cited source is a secondary aggregator. See reference annotation for better primary coverage.)*
+
+- Cloudflare's Code Mode demonstrated a **244× token reduction** (1,000 tokens vs. 244,000) by having models write code against pre-authorized API clients rather than exposing individual endpoints as MCP tools. Exposing the full Cloudflare API as MCP tools would require **1.17 million tokens**. [Vol1-Ref-E](../references.md#vol1-ref-e) *(Note: the comparison baseline — the full Cloudflare API exposed as MCP tools — is a pathological case no real implementation would use. The 244× figure illustrates the ceiling of naive MCP exposure, not typical practice. The directional finding (pre-authorized clients dramatically outperform tool-per-endpoint) is sound.)*
 
 - Function calling at 50 tools can spend **10,000–20,000 tokens** on tool descriptions before reading the user's message.
 
@@ -60,7 +63,7 @@ The scale of the problem is real and documented:
 | 30–50 tools | 8,000–20,000 tokens | Significant; can crowd out useful context |
 | 50+ tools | 20,000–60,000+ tokens | Often prohibitive; model accuracy degrades |
 
-*Based on Anthropic claude-3-5-sonnet tokenizer; schema complexity varies.*
+*Based on Anthropic claude-3-5-sonnet tokenizer at time of writing; schema complexity varies. Tokenizer behavior changes across model generations — treat these as order-of-magnitude estimates, not precise constants.*
 
 ---
 

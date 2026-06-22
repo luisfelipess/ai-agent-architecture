@@ -22,11 +22,11 @@ The scale compounds quickly. A modest multi-server MCP setup can add another 55,
 
 ## Failure Mode 2: The Lost-in-the-Middle Effect
 
-Research has documented a consistent **U-shaped attention curve** in how language models process long contexts: instructions at the very beginning and very end of a prompt get followed reliably, while instructions buried in the middle are systematically under-weighted, missed, or ignored. [Ref 1](../references.md#vol2-ref-1)
+Research has documented a consistent **U-shaped attention curve** in how language models process long contexts: instructions at the very beginning and very end of a prompt get followed reliably, while instructions buried in the middle are systematically under-weighted, missed, or ignored. [Liu et al. 2023, Ref 1a](../references.md#vol2-ref-1a), [Ref 1](../references.md#vol2-ref-1)
 
 A 50,000-token system prompt means that most of what you wrote will be in the middle. The more carefully you documented your edge cases, the more likely they are to be in the silent zone.
 
-This effect is not a model bug — it is a structural property of how transformers process long sequences. **The fix is not better prompting; it is shorter, more focused contexts.**
+This effect is a robustly observed empirical phenomenon. It's worth noting that it is not a fixed, immutable structural property: newer long-context models have shown meaningfully flatter performance curves as retrieval architectures improve. The U-shape is real and consistent enough to design around, but it does not apply uniformly across all model generations. **The fix is not better prompting; it is shorter, more focused contexts** — a recommendation that holds regardless of how flat the curve becomes.
 
 ---
 
@@ -40,9 +40,9 @@ More context, when it is unstructured and broad, adds noise rather than signal. 
 
 ## The Accuracy Ceiling of Prompt Engineering
 
-Practitioner analysis from 2026 documents a practical ceiling for how much prompt engineering alone can improve a system. [Ref 7](../references.md#vol2-ref-7)
+Vendor analysis from 2026 documents a practical ceiling for how much prompt engineering alone can improve a system. [Ref 7](../references.md#vol2-ref-7) *(Note: this is a directional signal from a vendor analysis blog, not a peer-reviewed measurement. The specific 75% figure should be read as an order-of-magnitude estimate, not a precise constant — different domains and task types will produce different ceilings. The underlying argument — that architectural changes outperform further wordsmithing — is independently supported by the structural failure modes above.)*
 
-The ceiling sits at roughly 75% task success for complex multi-step reasoning. Further gains require architectural changes — modular design, evaluation pipelines, structured validation — not more carefully worded instructions. Teams that try to push past this ceiling with longer and more detailed prompts typically see diminishing returns after the first 5,000–10,000 tokens of system instructions.
+Across complex multi-step reasoning tasks, practitioners consistently hit diminishing returns from prompt engineering well before reaching high accuracy. Further gains require architectural changes — modular design, evaluation pipelines, structured validation — not more carefully worded instructions. Teams that try to push past this ceiling with longer and more detailed prompts typically see diminishing returns after the first 5,000–10,000 tokens of system instructions.
 
 This is the fundamental case for the architecture in this volume: **the limits of the mega-prompt are structural, not rhetorical.** You cannot word your way past the U-shaped attention curve. You cannot token your way past the context tax. The architecture has to change.
 

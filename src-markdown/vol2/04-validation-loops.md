@@ -81,7 +81,17 @@ Corrective RAG (CRAG, arXiv:2401.15884) formalizes this pattern with a lightweig
 | **Medium** | Load supplementary context, generate a second response, take the better of the two |
 | **Low** | Escalate to the full domain library or a different retrieval strategy |
 
-This pattern eliminates a class of failures that simple retry loops cannot catch: cases where the model returns a confident-sounding but incorrect answer because the initial context was plausible but incomplete. CRAG modules recover 2–3 F1 points over baseline RAG in production evaluations.
+This pattern eliminates a class of failures that simple retry loops cannot catch: cases where the model returns a confident-sounding but incorrect answer because the initial context was plausible but incomplete. CRAG modules recover 2–3 F1 points over baseline RAG in production evaluations. *(Scope note: this is a narrow RAG-benchmark result; treat it as directional evidence that confidence-gated routing helps, not as a universal improvement figure.)*
+
+!!! warning "A caution on the source of the confidence score"
+
+    There are two different things called "confidence" in agent systems, and they are not equally trustworthy.
+
+    A score produced by a **separate evaluator** over retrieved context — the CRAG mechanism — is a measurement of something external to the generator. This is the **strong form**.
+
+    A score the **generating model reports about its own answer** (the 0.0–1.0 the LLM emits alongside its output) is the **weak form**: model self-assessment is poorly calibrated, and a model will emit high confidence on a fluent hallucination as readily as on a correct answer.
+
+    Use model self-reported confidence only as a coarse triage signal. Never use it as a correctness gate. When the cost of a wrong answer is high, route to an independent evaluator rather than trusting the generator's own number.
 
 ---
 

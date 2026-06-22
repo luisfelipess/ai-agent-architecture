@@ -74,6 +74,25 @@ Model A is not wrong as a category. It is the right choice for stable codebases 
 | Multi-tenant SaaS workspace | B | Policy must update everywhere simultaneously; tools enforce it |
 | Hybrid (stable + dynamic areas) | A for stable, B for dynamic | With explicit boundaries between the two |
 
+### The hybrid case deserves more than a table row
+
+Most real production systems are not cleanly Model A or Model B — they are hybrids. A codebase has a stable folder structure (Model A territory) but also a `/tmp/` or `/outputs/` area that changes on every run (Model B territory). A data pipeline has a fixed schema contract (stamp it in a STEERING.md once) but dynamic per-run output files (surface them via a `describe-tool` instead).
+
+The binary framing is useful for teaching the distinction, but **the real engineering difficulty lives at the boundary**: deciding which parts of a workspace are stable enough for stamped context files and which parts are too dynamic. Getting this wrong in either direction has costs:
+
+- Apply Model A to a dynamic area → stale context that silently misleads the agent about what files actually exist.
+- Apply Model B to a stable area → unnecessary engineering investment, tools built for contract enforcement where a one-time README would have been accurate for years.
+
+**A practical boundary rule:** if the content a context file would contain could become wrong within a single sprint without anyone deliberately changing it, it belongs in Model B. If it describes durable structure that only changes when a human makes a conscious architectural decision, Model A is appropriate.
+
+In the hybrid case, the architecture looks like this:
+
+- One minimal `STEERING.md` at the workspace root (Model A) — points to stable conventions, lists the tools available, and explicitly names which areas are tool-surfaced.
+- Per-folder context files only in the stable areas (Model A) — codebase structure, module roles, fixed schema definitions.
+- A `describe-tool` (Model B) for the dynamic areas — surfaces current state on demand, never stamped.
+
+The boundary between the two should be explicit in the root steering file, not implicit. An agent that doesn't know which areas are dynamic will try to read them as if they were stable.
+
 The next chapter covers the four tenets that operationalize Model B as an architectural direction. If your domain is clearly Model A, [Chapter 3](03-evidence-and-tradeoffs.md) covers the empirical evidence that still applies to your steering file and context file design.
 
 ---

@@ -4,6 +4,18 @@
 
 ---
 
+## A Note on Evidence Tiers
+
+Citations in this series fall into two categories, and readers should weight them differently.
+
+**Primary sources** — vendor documentation and peer-reviewable arXiv papers — support the quantified claims stated with precision in the text. These are unambiguous: official API docs from Anthropic, Google, OpenAI, and arXiv papers with methodology sections are airtight.
+
+**Secondary sources** — practitioner blogs and vendor analyses — are cited where primary measurement does not yet exist. The figures they carry (token-overhead percentages, accuracy ceilings, failure-rate breakdowns) are directional. They often trace to a single upstream measurement repeated across many posts and should be read as "the right order of magnitude" rather than established constants. Where a claim depends on a secondary source, the text flags it inline with a sourcing note.
+
+Where a secondary source has a primary alternative (arXiv paper, official documentation), the series cites the primary and lists the secondary as supplementary reading.
+
+---
+
 ## Volume 1 References — Integration Patterns
 
 ### Vol1-Ref-A
@@ -24,18 +36,22 @@ Source for the LlamaAgents observation that the MCP documentation server alone w
 ---
 
 ### Vol1-Ref-C
-**Vol1-Ref-C: Apideck — MCP Server Eating Your Context Window**
+**Vol1-Ref-C: Apideck — MCP Server Eating Your Context Window** *(single-origin; vendor measurement)*
 **URL:** https://www.apideck.com/blog/mcp-server-eating-context-window-cli-alternative
 
 Measured 3 MCP servers (GitHub, Slack, Sentry) consuming 143,000 of 200,000 tokens (72% of context window) before any conversation began.
 
+*Sourcing note: this figure has been widely reproduced across the industry (Milvus, Roadie, and others all cite it), but every instance traces back to this single Apideck post. Apideck is a vendor selling a CLI alternative to MCP. The measurement has not been independently reproduced by a neutral party. It is a representative data point and directional signal — not an independently verified constant.*
+
 ---
 
 ### Vol1-Ref-D
-**Vol1-Ref-D: ByteIota — Perplexity Ditches MCP**
+**Vol1-Ref-D: ByteIota — Perplexity Ditches MCP** *(secondary aggregator)*
 **URL:** https://byteiota.com/perplexity-ditches-mcp-72-context-waste-kills-protocol/
 
 Reports Denis Yarats (Perplexity CTO) announcing at the Ask 2026 conference (March 11, 2026) that Perplexity moved away from MCP due to context window overhead.
+
+*Sourcing note: the underlying event (Yarats at Ask 2026, March 11) is broadly corroborated by multiple independent write-ups from Cerebras, Descope, Sourcegraph, Milvus, and others. The fact is sound. However, this source is a low-quality aggregator blog. For attribution, any of the first-tier conference coverage or the named company write-ups is a stronger citation.*
 
 ---
 
@@ -129,12 +145,23 @@ ADK callback hooks: `before/after_agent_callback`, `before/after_model_callback`
 
 ---
 
+### Vol2-Ref-1a
+**Vol2-Ref-1a: Liu, N.F. et al. — "Lost in the Middle: How Language Models Use Long Contexts"**
+**Source:** arXiv:2307.03172, July 2023
+**URL:** https://arxiv.org/abs/2307.03172
+
+The canonical primary source for the U-shaped attention curve (lost-in-the-middle effect). Demonstrates empirically that language models perform best when relevant information appears at the very beginning or very end of the input context; performance degrades substantially for information in the middle. Evaluated across multiple models and task types. **This is the paper to cite for the lost-in-the-middle effect — not secondary blog summaries of it.**
+
+---
+
 ### Vol2-Ref-1
-**Vol2-Ref-1: Lanham, M. — "5 Skills Every AI Agent Needs (And Why Your Mega-Prompt Is Holding You Back)"**
+**Vol2-Ref-1: Lanham, M. — "5 Skills Every AI Agent Needs (And Why Your Mega-Prompt Is Holding You Back)"** *(secondary; practitioner blog)*
 **Source:** Medium, Feb 2026
 **URL:** https://medium.com/@Micheal-Lanham/5-skills-every-ai-agent-needs-and-why-your-mega-prompt-is-holding-you-back-4b4ab2471c0e
 
 Covers the three-level progressive disclosure model, the lost-in-the-middle effect, 90%+ activation accuracy targets, and the 50K vs 10K token comparison between monolithic and modular prompt architectures.
+
+*Sourcing note: this is a practitioner blog post, not primary research. The lost-in-the-middle effect it describes has a canonical primary source (Liu et al. 2023, Vol2-Ref-1a above). The "recurring tax" framing and the practical modular-vs-monolithic comparison are useful secondary commentary; the empirical claims should be traced to primary sources.*
 
 ---
 
@@ -184,19 +211,23 @@ Exposes keyword, semantic, and chunk-level retrieval tools directly to the agent
 ---
 
 ### Vol2-Ref-7
-**Vol2-Ref-7: Softcery — "The AI Agent Prompt Engineering Trap: Diminishing Returns and Real Solutions"**
+**Vol2-Ref-7: Softcery — "The AI Agent Prompt Engineering Trap: Diminishing Returns and Real Solutions"** *(secondary; vendor analysis blog)*
 **URL:** https://softcery.com/lab/the-ai-agent-prompt-engineering-trap-diminishing-returns-and-real-solutions
 
 Documents the accuracy ceiling of prompt engineering (typically ~75%) and the evidence that further gains require modular design, evaluation pipelines, and architectural changes rather than further wordsmithing.
 
+*Sourcing note: this is a vendor analysis blog. The ~75% ceiling figure is directional and should not be cited as a precise measured constant — it varies by domain, task type, and model. The directional claim (further wordsmithing yields diminishing returns; architectural changes are required for improvement) is well-supported by the structural failure modes described in Vol 2 and by the primary sources (Liu et al., ContextEvolve, E-mem). Use this source for color commentary; rely on primary sources for the underlying claims.*
+
 ---
 
 ### Vol2-Ref-8
-**Vol2-Ref-8: Zylos AI Research — "AI Agent Context Compression: Strategies for Long-Running Sessions"**
+**Vol2-Ref-8: Zylos AI Research — "AI Agent Context Compression: Strategies for Long-Running Sessions"** *(secondary; vendor research blog)*
 **Source:** Zylos AI, Feb 2026
 **URL:** https://zylos.ai/research/2026-02-28-ai-agent-context-compression-strategies
 
 Documents context drift as the dominant multi-agent failure mode. Context degradation is a continuous process beginning at token one across all tested frontier models; nearly 65% of enterprise AI failures in 2025 were attributed to context drift, not exhaustion.
+
+*Sourcing note: this is a vendor research blog. The "65%" figure is a round number with no traceable upstream methodology — it is the kind of statistic that circulates without a primary source. The context-drift-as-dominant-failure claim is directionally supported by the primary sources (ContextEvolve arXiv:2602.02597, E-mem arXiv:2601.21714). Cite those for the substantive claim; treat this figure as illustrative only.*
 
 ---
 
