@@ -95,6 +95,8 @@ When "tool" appears ambiguously in a source being quoted, context will clarify w
 
 ## About the Author
 
+*This is a personal publication, not affiliated with Amazon Web Services or Amazon. The views, opinions, and architectural recommendations expressed here are my own and do not represent the positions or endorsed practices of my employer. This series was researched and written in my personal time.*
+
 **Luis Felipe Silveira da Silva** is a Principal Solutions Architect at Amazon Web Services, based in Dublin, Ireland. He has spent a decade working at the intersection of cloud infrastructure and enterprise architecture — first as a Solutions Engineer, then as a Solutions Architect — translating complex technical systems into clear, actionable guidance for engineering teams and decision makers. More recently, that work has centered on how AI agents fit into real production systems: not as a novelty, but as a new layer of the stack that needs its own architectural thinking.
 
 This series is a distillation of what he's learned building and integrating AI tools — lessons earned through a combination of production experience, close reading of the research, and a lot of time staring at context window budgets.

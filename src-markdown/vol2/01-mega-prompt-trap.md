@@ -16,7 +16,7 @@ This is the **mega-prompt trap**, and it has three compounding failure modes tha
 
 Every token in the context window costs money and consumes space that could otherwise hold useful content. A well-intentioned 50,000-token system prompt — carrying every policy, workflow, and edge case your organization has documented — is paid for on every single interaction, whether or not the current query touches any of that content. It is, as one industry analysis put it, *"a recurring tax on every interaction."* [Ref 1](../references.md#vol2-ref-1)
 
-The scale compounds quickly. A modest multi-server MCP setup can add another 55,000+ tokens of tool definitions [Ref A, Vol 1](../references.md#vol1-ref-a). A growing skill library contributes further. Before the user's first message arrives, agents in production environments routinely exhaust **40–72% of their available context window** on definitions, instructions, and schemas that are irrelevant to the current task. [Ref C, Vol 1](../references.md#vol1-ref-c)
+The scale compounds quickly. A modest multi-server MCP setup can add another 55,000+ tokens of tool definitions [Ref A, Vol 1](../references.md#vol1-ref-a). A growing skill library contributes further. Before the user's first message arrives, agents in production environments can exhaust **40–72% of their available context window** on definitions, instructions, and schemas that are irrelevant to the current task. [Ref C, Vol 1](../references.md#vol1-ref-c)
 
 ---
 
